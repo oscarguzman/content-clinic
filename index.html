@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Content Clinic</title>
+  <style>
+    body { font-family: sans-serif; padding: 2rem; max-width: 600px; margin: auto; }
+    label { display: block; margin-top: 1rem; font-weight: bold; }
+    input, select, button { width: 100%; padding: 0.5rem; margin-top: 0.25rem; border-radius: 4px; border: 1px solid #ccc; }
+    button { background: #0070f3; color: white; border: none; cursor: pointer; margin-top: 1.5rem; }
+    #response { margin-top: 2rem; padding: 1rem; background: #f3f3f3; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <h1>Content Clinic</h1>
+  <form id="contentForm">
+    <label>Topic:</label>
+    <input id="topic" name="topic" required>
+
+    <label>Tone:</label>
+    <select id="tone" name="tone">
+      <option>Casual</option>
+      <option>Professional</option>
+      <option>Humor</option>
+      <option>Gen Z</option>
+    </select>
+
+    <label>Platform:</label>
+    <select id="platform" name="platform">
+      <option>Instagram</option>
+      <option>LinkedIn</option>
+      <option>TikTok</option>
+      <option>Facebook</option>
+      <option>X (Twitter)</option>
+    </select>
+
+    <button type="submit">Generate Content</button>
+  </form>
+
+  <div id="response">Your content will appear here.</div>
+
+  <script>
+    const form = document.getElementById('contentForm');
+    form.onsubmit = async (e) => {
+      e.preventDefault();
+      document.getElementById('response').innerText = 'Generating...';
+      
+      const res = await fetch('/api/proxy', { 
+        method: 'POST', 
+        headers: { 'Content-Type': 'application/json' }, 
+        body: JSON.stringify({
+          topic: form.topic.value,
+          tone: form.tone.value,
+          platform: form.platform.value
+        })
+      });
+
+      const data = await res.json();
+      document.getElementById('response').innerText = data.result || 'Something went wrong.';
+    };
+  </script>
+</body>
+</html>
