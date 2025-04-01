@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Content Clinic</title>
   <style>
     body {
@@ -10,90 +10,104 @@
       padding: 2rem;
       max-width: 600px;
       margin: auto;
-      background: #f9f9f9;
-    }
-    h1 {
-      margin-bottom: 1rem;
     }
     label {
       display: block;
       margin-top: 1rem;
+      font-weight: bold;
     }
-    select, input[type="text"], button {
+    input, select, button {
       width: 100%;
       padding: 0.5rem;
-      font-size: 1rem;
-      margin-top: 0.5rem;
+      margin-top: 0.25rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button {
+      background: #0070f3;
+      color: white;
+      border: none;
+      margin-top: 1.5rem;
+      cursor: pointer;
     }
     #response {
       margin-top: 2rem;
-      padding: 1rem;
-      background: #fff;
-      border: 1px solid #ccc;
       white-space: pre-wrap;
+      background: #f3f3f3;
+      padding: 1rem;
+      border-radius: 5px;
     }
   </style>
 </head>
 <body>
-  <h1>Content Clinic 🩺</h1>
-  <form id="content-form">
-    <label>
-      Topic
-      <input type="text" name="topic" required placeholder="e.g. benefits of walking your dog"/>
-    </label>
-    <label>
-      Tone
-      <select name="tone" required>
-        <option value="">Select a tone</option>
-        <option value="Casual">Casual</option>
-        <option value="Professional">Professional</option>
-        <option value="Gen Z">Gen Z</option>
-        <option value="Humor">Humor</option>
-      </select>
-    </label>
-    <label>
-      Platform
-      <select name="platform" required>
-        <option value="">Select a platform</option>
-        <option value="Instagram">Instagram</option>
-        <option value="TikTok">TikTok</option>
-        <option value="LinkedIn">LinkedIn</option>
-        <option value="X">X</option>
-        <option value="Facebook">Facebook</option>
-      </select>
-    </label>
-    <button type="submit">Generate Content</button>
+  <h1>Content Clinic</h1>
+  <form id="contentForm">
+    <label for="topic">What’s your topic?</label>
+    <input type="text" id="topic" name="topic" required />
+
+    <label for="tone">Choose a tone:</label>
+    <select id="tone" name="tone" required>
+      <option value="Casual">Casual</option>
+      <option value="Professional">Professional</option>
+      <option value="Humor">Humor</option>
+      <option value="Gen Z">Gen Z</option>
+    </select>
+
+    <label for="platform">Select a platform:</label>
+    <select id="platform" name="platform" required>
+      <option value="Instagram">Instagram</option>
+      <option value="LinkedIn">LinkedIn</option>
+      <option value="TikTok">TikTok</option>
+      <option value="Facebook">Facebook</option>
+      <option value="X">X (Twitter)</option>
+      <option value="Threads">Threads</option>
+      <option value="BlueSky">BlueSky</option>
+    </select>
+
+    <button type="submit">Generate Post</button>
   </form>
 
-  <div id="response">Your content will appear here 👇</div>
+  <div id="response">Your content will appear here after submission.</div>
 
   <script>
-    const form = document.getElementById("content-form");
-    const responseBox = document.getElementById("response");
+    const form = document.getElementById('contentForm');
+    const responseDiv = document.getElementById('response');
 
-    form.addEventListener("submit", async (e) => {
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      responseBox.textContent = "Generating... 🧠✨";
+      responseDiv.innerText = 'Generating...';
 
-      const formData = new FormData(form);
-      const payload = {
-        topic: formData.get("topic"),
-        tone: formData.get("tone"),
-        platform: formData.get("platform")
+      const data = {
+        topic: form.topic.value,
+        tone: form.tone.value,
+        platform: form.platform.value
       };
 
       try {
-        const res = await fetch("https://eoqgnxnnrtujgup.m.pipedream.net", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
+        const res = await fetch('https://eoqgnxnnrtujgup.m.pipedream.net', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
         });
 
-        const data = await res.json();
-        responseBox.textContent = data.result || "No content returned.";
+        const rawText = await res.text();
+        console.log("RAW RESPONSE:", rawText);
+
+        try {
+          const result = JSON.parse(rawText);
+          if (result.result) {
+            responseDiv.innerText = decodeURIComponent(result.result);
+          } else {
+            responseDiv.innerText = 'Something went wrong. No result returned.';
+          }
+        } catch (jsonErr) {
+          responseDiv.innerText = 'Invalid response from server. Check console.';
+        }
       } catch (err) {
-        console.error("Fetch error:", err);
-        responseBox.textContent = "❌ An error occurred. Please try again.";
+        console.error(err);
+        responseDiv.innerText = 'An error occurred. Please try again.';
       }
     });
   </script>
