@@ -1,81 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
   <title>Content Clinic</title>
   <style>
     body {
       font-family: sans-serif;
-      padding: 2rem;
       max-width: 600px;
-      margin: auto;
+      margin: 2rem auto;
+      padding: 1rem;
     }
-    label {
-      display: block;
-      margin-top: 1rem;
-      font-weight: bold;
-    }
+
     input, select, button {
-      width: 100%;
+      font-size: 1rem;
+      margin: 0.5rem 0;
       padding: 0.5rem;
-      margin-top: 0.25rem;
-      border: 1px solid #ccc;
-      border-radius: 4px;
+      width: 100%;
     }
-    button {
-      background: #0070f3;
-      color: white;
-      border: none;
-      margin-top: 1.5rem;
-      cursor: pointer;
-    }
+
     #response {
-      margin-top: 2rem;
       white-space: pre-wrap;
+      margin-top: 1rem;
       background: #f3f3f3;
       padding: 1rem;
-      border-radius: 5px;
+      border-radius: 4px;
     }
   </style>
 </head>
 <body>
   <h1>Content Clinic</h1>
-  <form id="contentForm">
-    <label for="topic">What’s your topic?</label>
-    <input type="text" id="topic" name="topic" required />
+  <form id="form">
+    <label>
+      Topic:
+      <input type="text" name="topic" required />
+    </label>
 
-    <label for="tone">Choose a tone:</label>
-    <select id="tone" name="tone" required>
-      <option value="Casual">Casual</option>
-      <option value="Professional">Professional</option>
-      <option value="Humor">Humor</option>
-      <option value="Gen Z">Gen Z</option>
-    </select>
+    <label>
+      Tone:
+      <select name="tone" required>
+        <option value="">Select one</option>
+        <option value="Casual">Casual</option>
+        <option value="Professional">Professional</option>
+        <option value="Humor">Humor</option>
+        <option value="Gen Z">Gen Z</option>
+      </select>
+    </label>
 
-    <label for="platform">Select a platform:</label>
-    <select id="platform" name="platform" required>
-      <option value="Instagram">Instagram</option>
-      <option value="LinkedIn">LinkedIn</option>
-      <option value="TikTok">TikTok</option>
-      <option value="Facebook">Facebook</option>
-      <option value="X">X (Twitter)</option>
-      <option value="Threads">Threads</option>
-      <option value="BlueSky">BlueSky</option>
-    </select>
+    <label>
+      Platform:
+      <select name="platform" required>
+        <option value="">Select one</option>
+        <option value="Instagram">Instagram</option>
+        <option value="Facebook">Facebook</option>
+        <option value="LinkedIn">LinkedIn</option>
+        <option value="TikTok">TikTok</option>
+        <option value="X">X (Twitter)</option>
+      </select>
+    </label>
 
-    <button type="submit">Generate Post</button>
+    <button type="submit">Generate</button>
   </form>
 
-  <div id="response">Your content will appear here after submission.</div>
+  <div id="response">Your result will appear here.</div>
 
   <script>
-    const form = document.getElementById('contentForm');
-    const responseDiv = document.getElementById('response');
+    const form = document.getElementById("form");
+    const responseBox = document.getElementById("response");
 
-    form.addEventListener('submit', async (e) => {
+    const ENDPOINT = "https://script.google.com/macros/s/AKfycbzXnvpwKxvAhYtDU6VuvyQbisfMh-3tSAEoYTX2K5yDcBik3MU2KEjCcufGicG8APg/exec"; // Replace with your real URL if needed
+
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
-      responseDiv.innerText = 'Generating...';
+      responseBox.textContent = "Generating...";
 
       const data = {
         topic: form.topic.value,
@@ -84,23 +80,23 @@
       };
 
       try {
-        const res = await fetch('https://script.google.com/macros/s/AKfycbzXnvpwKxvAhYtDU6VuvyQbisfMh-3tSAEoYTX2K5yDcBik3MU2KEjCcufGicG8APg/exec', {
-          method: 'POST',
-          body: JSON.stringify(data),
+        const res = await fetch(ENDPOINT, {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json'
-          }
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(data)
         });
 
-        const result = await res.json();
-        if (result.result) {
-          responseDiv.innerText = result.result;
+        const json = await res.json();
+
+        if (json.result) {
+          responseBox.textContent = json.result;
         } else {
-          responseDiv.innerText = 'No result returned.';
+          responseBox.textContent = "Error: " + JSON.stringify(json);
         }
       } catch (err) {
-        console.error('Fetch error:', err);
-        responseDiv.innerText = 'An error occurred. Please try again.';
+        responseBox.textContent = "Fetch error: " + err.message;
       }
     });
   </script>
