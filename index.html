@@ -1,44 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Content Clinic</title>
   <style>
-    body { font-family: sans-serif; padding: 2rem; max-width: 600px; margin: auto; }
-    label { display: block; margin-top: 1rem; font-weight: bold; }
-    input, select, button { width: 100%; padding: 0.5rem; margin-top: 0.25rem; border-radius: 4px; border: 1px solid #ccc; }
-    button { background: #0070f3; color: white; border: none; cursor: pointer; margin-top: 1.5rem; }
-    #response { margin-top: 2rem; padding: 1rem; background: #f3f3f3; white-space: pre-wrap; }
+    body {
+      font-family: sans-serif;
+      padding: 2rem;
+      max-width: 600px;
+      margin: auto;
+    }
+    label {
+      display: block;
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 0.5rem;
+      margin-top: 0.25rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button {
+      background: #0070f3;
+      color: white;
+      border: none;
+      margin-top: 1.5rem;
+      cursor: pointer;
+    }
+    #response {
+      margin-top: 2rem;
+      white-space: pre-wrap;
+      background: #f3f3f3;
+      padding: 1rem;
+      border-radius: 5px;
+    }
   </style>
 </head>
 <body>
   <h1>Content Clinic</h1>
-  
   <form id="contentForm">
-    <label>What's your topic?</label>
-    <input id="topic" name="topic" required>
+    <label for="topic">What’s your topic?</label>
+    <input type="text" id="topic" name="topic" required />
 
-    <label>Choose a tone:</label>
-    <select id="tone" name="tone">
-      <option>Casual</option>
-      <option>Professional</option>
-      <option>Humor</option>
-      <option>Gen Z</option>
+    <label for="tone">Choose a tone:</label>
+    <select id="tone" name="tone" required>
+      <option value="Casual">Casual</option>
+      <option value="Professional">Professional</option>
+      <option value="Humor">Humor</option>
+      <option value="Gen Z">Gen Z</option>
     </select>
 
-    <label>Select a platform:</label>
-    <select id="platform" name="platform">
-      <option>Instagram</option>
-      <option>LinkedIn</option>
-      <option>TikTok</option>
-      <option>Facebook</option>
-      <option>X (Twitter)</option>
+    <label for="platform">Select a platform:</label>
+    <select id="platform" name="platform" required>
+      <option value="Instagram">Instagram</option>
+      <option value="LinkedIn">LinkedIn</option>
+      <option value="TikTok">TikTok</option>
+      <option value="Facebook">Facebook</option>
+      <option value="X">X (Twitter)</option>
+      <option value="Threads">Threads</option>
+      <option value="BlueSky">BlueSky</option>
     </select>
 
-    <button type="submit">Generate Content</button>
+    <button type="submit">Generate Post</button>
   </form>
 
-  <div id="response">Your content will appear here.</div>
+  <div id="response">Your content will appear here after submission.</div>
 
   <script>
     const form = document.getElementById('contentForm');
@@ -55,7 +84,7 @@
       };
 
       try {
-        const res = await fetch('https://api.allorigins.win/raw?url=https://hook.us2.make.com/72gm5ddedrrduotjw4to8qrwcx2hnwtf', {
+        const res = await fetch('https://hook.us2.make.com/72gm5ddedrrduotjw4to8qrwcx2hnwtf', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -63,28 +92,18 @@
           body: JSON.stringify(data)
         });
 
-        const text = await res.text();
-        console.log('Raw response:', text);
+        const result = await res.json();
 
-        let parsed;
-        try {
-          parsed = JSON.parse(text);
-        } catch (err) {
-          responseDiv.innerText = 'Received invalid JSON. Raw response:\n\n' + text;
-          return;
-        }
-
-        if (parsed.result) {
-          responseDiv.innerText = decodeURIComponent(parsed.result);
+        if (result.result) {
+          responseDiv.innerText = decodeURIComponent(result.result);
         } else {
           responseDiv.innerText = 'Something went wrong. No result returned.';
         }
       } catch (err) {
-        console.error(err);
+        console.error('Fetch error:', err);
         responseDiv.innerText = 'An error occurred. Please try again.';
       }
     });
   </script>
 </body>
 </html>
-
