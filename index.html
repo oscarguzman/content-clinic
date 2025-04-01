@@ -84,29 +84,22 @@
       };
 
       try {
-        const res = await fetch('https://eoqgnxnnrtujgup.m.pipedream.net', {
+        const res = await fetch('https://script.google.com/macros/s/AKfycbzXnvpwKxvAhYtDU6VuvyQbisfMh-3tSAEoYTX2K5yDcBik3MU2KEjCcufGicG8APg/exec', {
           method: 'POST',
+          body: JSON.stringify(data),
           headers: {
             'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(data)
+          }
         });
 
-        const rawText = await res.text();
-        console.log("RAW RESPONSE:", rawText);
-
-        try {
-          const result = JSON.parse(rawText);
-          if (result.result) {
-            responseDiv.innerText = decodeURIComponent(result.result);
-          } else {
-            responseDiv.innerText = 'Something went wrong. No result returned.';
-          }
-        } catch (jsonErr) {
-          responseDiv.innerText = 'Invalid response from server. Check console.';
+        const result = await res.json();
+        if (result.result) {
+          responseDiv.innerText = result.result;
+        } else {
+          responseDiv.innerText = 'No result returned.';
         }
       } catch (err) {
-        console.error(err);
+        console.error('Fetch error:', err);
         responseDiv.innerText = 'An error occurred. Please try again.';
       }
     });
