@@ -1,45 +1,90 @@
-<script>
-  const form = document.getElementById('contentForm');
-  const responseDiv = document.getElementById('response');
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Content Clinic</title>
+  <style>
+    body { font-family: sans-serif; padding: 2rem; max-width: 600px; margin: auto; }
+    label { display: block; margin-top: 1rem; font-weight: bold; }
+    input, select, button { width: 100%; padding: 0.5rem; margin-top: 0.25rem; border-radius: 4px; border: 1px solid #ccc; }
+    button { background: #0070f3; color: white; border: none; cursor: pointer; margin-top: 1.5rem; }
+    #response { margin-top: 2rem; padding: 1rem; background: #f3f3f3; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <h1>Content Clinic</h1>
+  
+  <form id="contentForm">
+    <label>What's your topic?</label>
+    <input id="topic" name="topic" required>
 
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    responseDiv.innerText = 'Generating...';
+    <label>Choose a tone:</label>
+    <select id="tone" name="tone">
+      <option>Casual</option>
+      <option>Professional</option>
+      <option>Humor</option>
+      <option>Gen Z</option>
+    </select>
 
-    const data = {
-      topic: form.topic.value,
-      tone: form.tone.value,
-      platform: form.platform.value
-    };
+    <label>Select a platform:</label>
+    <select id="platform" name="platform">
+      <option>Instagram</option>
+      <option>LinkedIn</option>
+      <option>TikTok</option>
+      <option>Facebook</option>
+      <option>X (Twitter)</option>
+    </select>
 
-    try {
-      const res = await fetch('https://api.allorigins.win/raw?url=https://hook.us2.make.com/72gm5ddedrrduotjw4to8qrwcx2hnwtf', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-      });
+    <button type="submit">Generate Content</button>
+  </form>
 
-      const text = await res.text();
-      console.log('Raw response:', text);
-      
-      let parsed;
+  <div id="response">Your content will appear here.</div>
+
+  <script>
+    const form = document.getElementById('contentForm');
+    const responseDiv = document.getElementById('response');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      responseDiv.innerText = 'Generating...';
+
+      const data = {
+        topic: form.topic.value,
+        tone: form.tone.value,
+        platform: form.platform.value
+      };
+
       try {
-        parsed = JSON.parse(text);
-      } catch (err) {
-        responseDiv.innerText = 'Received invalid JSON. Raw response:\n\n' + text;
-        return;
-      }
+        const res = await fetch('https://api.allorigins.win/raw?url=https://hook.us2.make.com/72gm5ddedrrduotjw4to8qrwcx2hnwtf', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        });
 
-      if (parsed.result) {
-        responseDiv.innerText = decodeURIComponent(parsed.result);
-      } else {
-        responseDiv.innerText = 'Something went wrong. No result returned.';
+        const text = await res.text();
+        console.log('Raw response:', text);
+
+        let parsed;
+        try {
+          parsed = JSON.parse(text);
+        } catch (err) {
+          responseDiv.innerText = 'Received invalid JSON. Raw response:\n\n' + text;
+          return;
+        }
+
+        if (parsed.result) {
+          responseDiv.innerText = decodeURIComponent(parsed.result);
+        } else {
+          responseDiv.innerText = 'Something went wrong. No result returned.';
+        }
+      } catch (err) {
+        console.error(err);
+        responseDiv.innerText = 'An error occurred. Please try again.';
       }
-    } catch (err) {
-      console.error(err);
-      responseDiv.innerText = 'An error occurred. Please try again.';
-    }
-  });
-</script>
+    });
+  </script>
+</body>
+</html>
+
