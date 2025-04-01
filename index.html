@@ -84,7 +84,7 @@
       };
 
       try {
-        const res = await fetch('https://hook.us2.make.com/72gm5ddedrrduotjw4to8qrwcx2hnwtf', {
+        const res = await fetch('https://your-pipedream-endpoint-url', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -95,12 +95,12 @@
         const result = await res.json();
 
         if (result.result) {
-          responseDiv.innerText = decodeURIComponent(result.result);
+          responseDiv.innerText = result.result;
         } else {
           responseDiv.innerText = 'Something went wrong. No result returned.';
         }
       } catch (err) {
-        console.error('Fetch error:', err);
+        console.error(err);
         responseDiv.innerText = 'An error occurred. Please try again.';
       }
     });
