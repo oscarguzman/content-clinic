@@ -41,7 +41,7 @@
 </head>
 <body>
   <h1>Content Clinic</h1>
-  <form id="contentForm" onsubmit="return false;">
+  <form id="contentForm">
     <label for="topic">What’s your topic?</label>
     <input type="text" id="topic" name="topic" required />
 
@@ -70,8 +70,6 @@
   <div id="response">Your content will appear here after submission.</div>
 
   <script>
-    const ENDPOINT = "https://script.google.com/macros/s/AKfycbzXnvpwKxvAhYtDU6VuvyQbisfMh-3tSAEoYTX2K5yDcBik3MU2KEjCcufGicG8APg/exec";
-
     const form = document.getElementById('contentForm');
     const responseDiv = document.getElementById('response');
 
@@ -86,7 +84,7 @@
       };
 
       try {
-        const res = await fetch(ENDPOINT, {
+        const res = await fetch('https://content-clinic-backend.onrender.com/generate', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -94,15 +92,15 @@
           body: JSON.stringify(data)
         });
 
-        const json = await res.json();
+        const result = await res.json();
 
-        if (json.result) {
-          responseDiv.innerText = json.result;
+        if (result.result) {
+          responseDiv.innerText = result.result;
         } else {
           responseDiv.innerText = 'Something went wrong. No result returned.';
         }
       } catch (err) {
-        console.error("Fetch error:", err);
+        console.error('Fetch error:', err);
         responseDiv.innerText = 'An error occurred. Please try again.';
       }
     });
